@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+
+
+        <TextView
+            android:layout_width="5dp"
+            android:layout_height="20dp"
+            android:background="#0073ff"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginTop="5dp"
+            android:id="@+id/tv_color"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="全部"
+            android:textSize="20sp"
+            android:gravity="center"
+            android:id="@+id/all"
+            android:layout_toRightOf="@+id/tv_color"
+            android:textColor="#000000"
+            />
+
+        <ImageView
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:id="@+id/iv_more"
+            android:src="@mipmap/ic_launcher"
+            android:layout_toRightOf="@+id/all"
+            />
+
+        <RadioGroup
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:orientation="horizontal"
+            android:gravity="center"
+            >
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:button="@null"
+                    android:text="最热"
+                    android:textColor="@drawable/radiobutton_color"
+                    android:layout_margin="5dp"
+                    android:id="@+id/tv_songbook3_hotest"
+                    android:checked="true"
+                    />
+
+                <TextView
+                    android:layout_width="0.5dp"
+                    android:layout_height="match_parent"
+                    android:background="#000000"
+                    android:layout_margin="5dp"
+                    />
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:button="@null"
+                    android:text="最新"
+                    android:textColor="@drawable/radiobutton_color"
+                    android:layout_margin="5dp"
+                    android:id="@+id/tv_songbook3_newest"
+                    />
+        </RadioGroup>
+    </RelativeLayout>
+
+
+    <GridView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/gv_main2_songbook3"
+        android:numColumns="2"
+        >
+    </GridView>
+
+
+
+
+</LinearLayout>

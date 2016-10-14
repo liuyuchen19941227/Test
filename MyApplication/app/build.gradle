@@ -1,0 +1,74 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 24
+
+    // 第一个文件夹 build-tools
+    buildToolsVersion "24.0.1"
+
+
+    // docs文件 离线版api文档(index.xml)
+
+    // Android-SDK-mac/extras/android/m2repository(给VisioStudio用的)/com/android/support 含有SDK自带的工具包
+    // v7包比较重要
+    // Android-SDK-mac/extras/android/support(给eclipse用的)
+
+    // Users/dllo/Desktop/Tools/Android-SDK-mac/extras/intel/Hardware_Accelerated_Execution_Manager/IntelHAXM_6.0.3.dmg安装后会给自带虚拟机运行加速
+
+    // platforms-tools/adb 安卓调试桥(通过adb命令连接手机,虚拟机)
+    // platforms-tools/sqlite3 类似数据库
+
+    // platforms API平台(14-24)
+
+    // samples 扩展包的例子(RecyclerView....)
+
+    // sources 源码(内部函数的参数)
+
+    // system-Images 系统原生的虚拟机
+
+    // tools/draw9patch 可以放大,拖动,拉伸(Studio集成:右击图片,create9patch - file,选择一张图片可进行操作)
+    // tools/monitor 控制器(studio集成)
+    // tools/screenshot2 可以截屏
+    // tools/uiautomatorviewer(可以看软件的布局)
+
+
+
+
+    defaultConfig {
+        applicationId "com.example.dllo.myapplication"
+        minSdkVersion 19
+        targetSdkVersion 24
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    testCompile 'junit:junit:4.12'
+    compile 'com.android.support:appcompat-v7:24.1.1'
+    compile 'com.android.support:design:24.1.1'
+    compile 'com.android.support:recyclerview-v7:24.1.1'
+    compile 'eu.the4thfloor.volley:com.android.volley:2015.05.28'
+    compile 'com.google.code.gson:gson:2.7'
+    compile files('libs/picasso-2.5.2.jar')
+    // banner
+    compile 'com.youth.banner:banner:1.3.2'
+    // ImageLoader
+    compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.3'
+    // RecyclerView
+    compile 'com.android.support:recyclerview-v7:24.1.1'
+    // 协调布局
+    compile 'com.android.support:design:24.1.1'
+    // 更改SDK版本为23
+    // EventBus 用来传数据
+    compile 'org.greenrobot:eventbus:3.0.0'
+    compile files('libs/MobCommons-2016.0830.1940.jar')
+    compile files('libs/jpush-android-2.1.9.jar')
+}

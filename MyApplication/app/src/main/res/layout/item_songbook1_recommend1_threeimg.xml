@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:orientation="vertical"
+              android:gravity="center_horizontal">
+
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            >
+
+            <ImageView
+                android:id="@+id/iv_songbook1_recommend_img"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:src="@mipmap/ic_launcher"
+                />
+
+            <!--图的中间还要加上日期-->
+            <TextView
+                android:id="@+id/tv_songbook1_recommend_todaydate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="0"
+                android:textColor="#0666ef"
+                android:visibility="invisible"
+                />
+        </RelativeLayout>
+
+
+        <TextView
+            android:id="@+id/tv_songbook1_recommend_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="10sp"
+            android:singleLine="true"
+            android:textColor="#000000"
+            />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tv_songbook1_recommend_list_author"
+        android:textSize="10sp"
+        android:textColor="#000000"
+        />
+
+
+</LinearLayout>
