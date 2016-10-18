@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -17,14 +18,14 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
 import com.example.dllo.myapplication.R;
-import com.example.dllo.myapplication.baseClass.BaseFragment;
-import com.example.dllo.myapplication.baseClass.GsonRequest;
-import com.example.dllo.myapplication.baseClass.MyApp;
-import com.example.dllo.myapplication.baseClass.VolleySingleton;
+import com.example.dllo.myapplication.base_class.BaseFragment;
+import com.example.dllo.myapplication.base_class.GsonRequest;
+import com.example.dllo.myapplication.base_class.MyApp;
+import com.example.dllo.myapplication.base_class.VolleySingleton;
+import com.example.dllo.myapplication.detail.musicplay.MusicService;
 import com.example.dllo.myapplication.songbook.adapter.SongBook1_Recommend_RecyclerAdapter;
 import com.example.dllo.myapplication.songbook.bean.CarouselFigureBean;
-import com.example.dllo.myapplication.songbook.detail.DetailList1_Recommend1_MusicListRecommend;
-import com.example.dllo.myapplication.songbook.detail.musicplay.MusicService;
+import com.example.dllo.myapplication.songbook.songbookdetails.DetailList1_Recommend1_MusicListRecommend;
 import com.example.dllo.myapplication.songbook.tools.OnRecyclerViewItemListener;
 import com.example.dllo.myapplication.songbook.tools.URLValues;
 import com.youth.banner.Banner;
@@ -179,14 +180,13 @@ public class SongBookFragment1_Recommend extends BaseFragment {
                                 if (position == 10) {
                                     ArrayList<String> arrayList1 = new ArrayList<String>();
                                     for (int i = 0; i < response.getResult().getRecsong().getResult().size(); i++) {
-                                        arrayList1.add(URLValues.PLAY_FRONT + response.getResult().getRecsong().getResult().get(i).getSong_id() +URLValues.PLAY_BEHIND);
+                                        arrayList1.add(URLValues.PLAY_FRONT + response.getResult().getRecsong().getResult().get(i).getSong_id() + URLValues.PLAY_BEHIND);
                                         // 用逻辑的办法找到点击歌曲的位置......
-                                        if (url.equals(URLValues.PLAY_FRONT + response.getResult().getRecsong().getResult().get(i).getSong_id() +URLValues.PLAY_BEHIND)) {
+                                        if (url.equals(URLValues.PLAY_FRONT + response.getResult().getRecsong().getResult().get(i).getSong_id() + URLValues.PLAY_BEHIND)) {
                                             id = i;
                                         }
                                         Log.d("SongBookFragment1_Recom", arrayList1.get(i));
                                     }
-
 
                                     // 交给服务去做
                                     Intent intent = new Intent(MyApp.getContext(), MusicService.class);
@@ -199,24 +199,31 @@ public class SongBookFragment1_Recommend extends BaseFragment {
                                     // EventBus传到MainActivity,在那里面更新服务
 
 
+                                } else if (position == 4){
+                                    // 只需要position这个参数和当前url就够了,不需要位置和总共的List
 
-                                } else {
                                     DetailList1_Recommend1_MusicListRecommend fragment = new DetailList1_Recommend1_MusicListRecommend();
                                     // Bundle发送数据
                                     Bundle bundle = new Bundle();
                                     bundle.putString("url", url);
+//                                    bundle.putInt("position", id);//
+
                                     fragment.setArguments(bundle);
                                     // Fragment切换并添加动画效果
-                                    getFragmentManager().beginTransaction().setCustomAnimations(R.anim.list_detail_enter, R.anim.list_detail_exit).replace(R.id.fl_main, fragment).commit();
-
-
+                                    // getFragmentManager().beginTransaction().setCustomAnimations(R.anim.list_detail_enter, R.anim.list_detail_exit).replace(R.id.fl_main, fragment).commit();
                                     // 等同于上面的方法
-//                                    FragmentTransaction transaction = getFragmentManager().beginTransaction();
-//                                    transaction.replace(R.id.fl_main, fragment);
-//                                    transaction.addToBackStack(null);
-//                                    transaction.commit();
+                                    FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                                    // 动画效果添加到哪里来着
+                                    transaction.setCustomAnimations(R.anim.list_detail_enter, R.anim.list_detail_exit);
+                                    transaction.replace(R.id.fl_main, fragment);
+                                    transaction.addToBackStack(null);
+                                    transaction.commit();
 
-                                    }
+
+
+
+                                }
+
                             }
                         });
                     }
@@ -241,12 +248,7 @@ public class SongBookFragment1_Recommend extends BaseFragment {
         //        getImage();
 
 
-
-
-
-
     }
-
 
 
     @Override

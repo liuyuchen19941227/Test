@@ -8,6 +8,7 @@ import android.widget.ImageView;
 
 import java.util.ArrayList;
 
+// 轮播图(没有用到,用的是banner..)
 public class CFPageAdapter extends PagerAdapter{
 
     private Context mContext;

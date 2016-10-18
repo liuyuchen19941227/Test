@@ -17,7 +17,7 @@ import android.widget.TextView;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 import com.example.dllo.myapplication.R;
-import com.example.dllo.myapplication.baseClass.MyApp;
+import com.example.dllo.myapplication.base_class.MyApp;
 import com.example.dllo.myapplication.songbook.bean.CarouselFigureBean;
 import com.example.dllo.myapplication.songbook.tools.OnRecyclerViewItemListener;
 import com.example.dllo.myapplication.songbook.tools.URLValues;
@@ -264,7 +264,7 @@ public class SongBook1_Recommend_RecyclerAdapter extends RecyclerView.Adapter {
                         Log.d("SongBook1_Recommend_Rec", url);
                         // 接口回调
 
-                        listener.onItemClick(viewHolder2.gv, url, i);
+                        listener.onItemClick(viewHolder2.gv, url, 4);//
 
                     }
                 });
@@ -542,11 +542,8 @@ public class SongBook1_Recommend_RecyclerAdapter extends RecyclerView.Adapter {
             gv = (GridView) itemView.findViewById(R.id.gv_songbook1_recommend1);
             img = (ImageView) itemView.findViewById(R.id.iv_songbook1_recommend1_three_img);
             title = (TextView) itemView.findViewById(R.id.tv_songbook1_recommend1_list_title);
-
             Adapter1 adapter = new Adapter1(MyApp.getContext());
             gv.setAdapter(adapter);
-
-
         }
 
         private class Adapter1 extends BaseAdapter {
@@ -564,7 +561,6 @@ public class SongBook1_Recommend_RecyclerAdapter extends RecyclerView.Adapter {
 
             @Override
             public Object getItem(int i) {
-
                 return bean.getResult();
             }
 
@@ -585,21 +581,17 @@ public class SongBook1_Recommend_RecyclerAdapter extends RecyclerView.Adapter {
                     viewHolder1_1 = (ViewHolder1_1) view.getTag();
                 }
 
-
                 switch (pos) {
-
                     case 2:
                         viewHolder1_1.title.setText(bean.getResult().getEntry().getResult().get(i).getTitle());
                         imageLoader.displayImage(bean.getResult().getEntry().getResult().get(i).getIcon(), viewHolder1_1.img);
                         notifyDataSetChanged();
                         break;
-
                     case 6:
                         imageLoader.displayImage(bean.getResult().getEntry().getResult().get(i).getIcon(), viewHolder1_1.img);
                         notifyDataSetChanged();
                         break;
                 }
-
 
                 return view;
             }
@@ -614,7 +606,7 @@ public class SongBook1_Recommend_RecyclerAdapter extends RecyclerView.Adapter {
 
                 public ViewHolder1_1(View view) {
 
-                    //                    View view = LayoutInflater.from(MyApp.getContext()).inflate(R.layout.view_songbook1_recommend1_threeimg, null);
+                    // View view = LayoutInflater.from(MyApp.getContext()).inflate(R.layout.view_songbook1_recommend1_threeimg, null);
                     img = (ImageView) view.findViewById(R.id.iv_songbook1_recommend2_img);
                     title = (TextView) view.findViewById(R.id.tv_songbook1_recommend2_list_name);
 

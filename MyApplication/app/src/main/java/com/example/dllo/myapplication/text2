@@ -1,0 +1,412 @@
+记事本
+
+
+主线程不能获取网络数据和对数据库进行操作
+子线程不能刷新UI
+
+
+
+
+//    @SerializedName("int");//将下方key值用括号里面的内容去解析
+    // 列编辑模式 Column Selection Mode
+
+
+    直接把需要的集合传到adapter里面
+
+    //直接去取想要的数据
+    修改getItem方法的返回值
+    ListBean bean = getItem(position);
+
+// 找布局的时候
+    private LayoutInflater inflater;
+    Adapter的构造方法里面写出inflater = LayoutInflater.from(context);
+
+
+private Picasso mPicasso;
+mPicasso = Picasso.with(context);
+mPicasso.Builder(context).build();
+
+into(new Target())  里面的第一个方法 Bitmap bitmap参数是返回的Bitmap
+
+
+    // Adapter刷新数据集合的方法
+    public void refreshDat() {
+
+    }
+
+
+
+
+// 继承该方法的类,在<>里面填写Bean类型名
+// 只需要完成getView方法就可以了
+// 适配器的Holder继承ViewHolder 实现构造方法
+
+
+
+public abstract class baseAdapter<T, VH extends Base.ViewHolder> extends BaseAdapter() {
+    private List<E> dataList;
+    getCount() {
+    }
+
+    public E getItem(){return data.get(position)}
+
+
+
+    // 下拉刷新调用
+    public void refreshData(List<T> datas) {
+        // 对this.dataList进行非空判断
+        // 为空那就new一个ArrList对象
+
+        dataList.clear();
+        this.dataList.addAll()dataList);
+        notifyDataSetChanged();
+    }
+
+
+    // 上拉加载调用
+    loadData(){
+        this.dataList.addAll(datalist);
+    }
+
+    public BaseAdapter(C){
+        // 绑定context
+    }
+
+    // 系统的
+    getView() {
+
+        VH holder = null;
+
+        // 绑定布局
+       if(convertView == null){
+       //
+        View view = mInflater.inflate(layoutId, false);
+        // layoutId, parent, false 生成的子布局计算的会精确些; 填true,方法的返回值就是parent了
+        // null 没有父布局,写的一些参数是不生效的
+        holder = new createViewHolder(view);
+        view.setTag(holder);
+
+       } else {
+            holder = (VH)convertView,getTag()
+       }
+       E data = getItem(position);
+       onBindHolder(data, holder);
+       return convertView
+
+    }
+
+    // 定义抽象方法
+    protected abstract VH create ViewHodler(E data, ViewHolder holder);
+
+    public static class ViewHolder{
+        public View itemView;
+
+        // 构造方法
+        public ViewHolder(View itemView) {
+            this.itemView = itemView;
+        }
+    }
+}
+
+
+
+rv的点击事件 implements OnClickListener
+{
+ public interfact OnReLis() {
+    void onItemClick(int pos, rv viewHolder);
+ }
+
+
+ onBindeViewHolder() {
+    holder.itemView.setOnClickListener(this);
+ }
+
+
+onClick(View v){
+    ViewHolder holder = (ViewHolder) v.getTag();
+    int position = holder.getPosition();
+
+
+}
+
+// 继承的是那个ViewHolder
+onBindHolder() extends BaseAdapter.ViewHolder{
+    holder.itemView.setOnClickListener()
+}
+
+
+
+}
+
+ToolBar标题栏的集成 在BaseActivity/FragmentActivity
+
+
+
+
+
+
+
+
+
+不停地去发送数据等对方接收,不如让对方不断地去请求数据
+数据就在那里,想要自己去取
+
+
+
+把被动接收变成主动索取,这样子会好写很多很多
+
+
+
+
+
+
+
+// 服务不能绑的那么快?我咋不信呢.....
+
+
+
+
+
+// (Java的) 类 implements Serilizable  接口就可以用intent传   getSerializableExtra("key值");
+
+// (安卓的) 类 implements Parceable(包裹化)
+// getIntent().getParcelableExtra("key值") 有内部类的话,先把内部类实现这个方法,再去实现外层的(writeToParse)
+
+
+
+// EventBus传值
+// 适配器..去new 传值回调..
+
+
+
+
+
+// 传值
+Bundle args = new Bundle();
+args.putInt("key值", position);
+fragment.setArguments(args);
+return fragment;
+
+
+// 接收值
+Bundles args = getArguments();
+int pos = args.getInt("key值");
+
+
+
+
+
+
+// Adapter里面直接返回
+return TestFragment.NewInstance(position);
+
+
+Fragment里面打方法名自动出来
+NewInstance(int position)
+
+
+
+
+
+
+
+
+
+
+
+
+帧布局 协调布局  流式布局
+
+
+RadioButton设置下面的点击按钮
+
+
+
+
+各种网址....
+内部recyclerView没有点击事件
+协调布局 标题和 冻结栏覆盖
+
+
+
+
+recyclerView添加点击效果:(行布局添加点击背景)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        // 广播
+
+        // 接收方的定义 必须要在发送之前!!!!
+        // 接收1
+        receiver = new Receiver();
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("m");
+        registerReceiver(receiver, filter);
+
+        // 接收2
+        public class Receiver extends BroadcastReceiver{
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                Log.d("Receiver", "....");
+                String name = intent.getStringExtra("n");
+                Log.d("Receiver", name);
+            }
+        }
+
+
+        // 发广播
+        Intent intent1 = new Intent("m");
+        intent1.putExtra("n", "歌名");
+        Log.d("12345", "q23432143");
+        getContext().sendBroadcast(intent1);
+
+
+
+
+// bundle跳转
+// MusicPlayer player = new MusicPlayer();
+// Bundle bundle = new Bundle();
+// bundle.putStringArrayList("urlMore", arrayList1);
+// bundle.putInt("position", position);
+// getActivity().overridePendingTransition(R.anim.list_detail_enter, R.anim.list_detail_exit);
+// musicGet(url);
+
+
+
+
+郭霖 android开发探索
+
+
+
+
+
+
+
+
+    // 显示MusicList - PopUpWindow()
+    private void showPopUpWindow(){
+
+
+
+
+
+        // 设置个透明度
+
+
+
+        // ppWMusicList = LayoutInflater.from(this).inflate(R.layout.popup_window_my_songlist, getParent(), false);
+
+        View contentView = LayoutInflater.from(this).inflate(R.layout.popup_window_my_songlist, null);
+        PopupWindow ppWMusicList = new PopupWindow(contentView, RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT, true);
+
+        RecyclerView recyclerView = bindView(R.id.rv_popup_window_mylist);
+
+
+        ppWMusicList.setTouchInterceptor(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+
+
+
+
+                // 要返回false
+                return false;
+            }
+        });
+
+
+        // 必须要设置,不然点击返回按钮和背景是不会退出popupWindow的
+        ppWMusicList.setTouchable(true);
+        ppWMusicList.setOutsideTouchable(true);
+        ppWMusicList.setBackgroundDrawable(new BitmapDrawable(getResources(), (Bitmap) null));
+
+
+        musicItemBeans = new ArrayList<>();
+
+        if (musics != null) {
+            // 歌单的url
+            for (int i = 0; i < musics.size(); i++) {
+                // VolleyApplication等都没有分好
+                sendGetArr(musics.get(i));
+                Log.d("MainActivity", musicItemBeans.get(i).getSong());
+            }
+        }
+
+
+
+        PopUpWindowRecyclerViewAdapter adapter = new PopUpWindowRecyclerViewAdapter(this);
+        adapter.setMusicItemBeen(musicItemBeans);
+        recyclerView.setAdapter(adapter);
+
+        LinearLayoutManager manager = new LinearLayoutManager(this);
+        manager.setOrientation(LinearLayoutManager.VERTICAL);
+        recyclerView.setLayoutManager(manager);
+
+
+
+
+        // ppw设置显示位置(第二个参数:高度为差不多距离底部的   像素?  )
+        ppWMusicList.showAtLocation(vp, Gravity.BOTTOM, 0, 50);
+
+        // 在某某下方显示
+//        ppWMusicList.showAsDropDown(vp);
+
+
+
+//        addTobackStack 方法 将该fr压到栈底,
+
+
+
+    }
+
+
+
+
+
+
+
+    // 整个播放列表(解析后的)
+    private void sendGetArr(String s) {
+        // 用这个方法的话,bean还是要加上的
+        StringRequest request2 = new StringRequest(
+                s,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        String responseNew = response.substring(1, response.length() - 2);
+                        final Gson gson = new Gson();
+
+                        MusicBean bean = gson.fromJson(responseNew, MusicBean.class);
+                        MusicItemBean musicItemBean = new MusicItemBean();
+
+                        musicItemBean.setSong(bean.getSonginfo().getAuthor());
+                        musicItemBean.setAuthor(bean.getSonginfo().getTitle());
+                        musicItemBean.setIsPlay(0);// 是否在播放...暂定为0
+
+                        musicItemBeans.add(musicItemBean);
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d("MusicActivity", "error");
+                    }
+                }
+        );
+        VolleySingleton.getInstance().addRequest(request2);
+    }
+
+

@@ -8,6 +8,7 @@
     <string name="error_style_empty">style不能为空</string>
     <string name="error_alias_empty">alias不能为空</string>
     <string name="error_tag_empty">tag不能为空</string>
+
     <string name="error_tag_gs_empty">格式不对</string>
     <string name="error_network">网络连接异常,初始化失败 请检查网络！</string>
     <string name="logining">程序在后台执行, 请查看日志！</string>

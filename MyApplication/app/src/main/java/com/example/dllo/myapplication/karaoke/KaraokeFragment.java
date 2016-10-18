@@ -1,7 +1,7 @@
 package com.example.dllo.myapplication.karaoke;
 
 import com.example.dllo.myapplication.R;
-import com.example.dllo.myapplication.baseClass.BaseFragment;
+import com.example.dllo.myapplication.base_class.BaseFragment;
 
 public class KaraokeFragment extends BaseFragment{
 

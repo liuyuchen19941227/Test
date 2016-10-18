@@ -7,7 +7,7 @@ import android.support.v4.view.ViewPager;
 
 import com.example.dllo.myapplication.R;
 import com.example.dllo.myapplication.adapter.FragmentAdapter;
-import com.example.dllo.myapplication.baseClass.BaseFragment;
+import com.example.dllo.myapplication.base_class.BaseFragment;
 
 import java.util.ArrayList;
 

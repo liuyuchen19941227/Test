@@ -1,7 +1,7 @@
 package com.example.dllo.myapplication.songbook.fragment;
 
 import com.example.dllo.myapplication.R;
-import com.example.dllo.myapplication.baseClass.BaseFragment;
+import com.example.dllo.myapplication.base_class.BaseFragment;
 
 public class SongBookFragment5_MV extends BaseFragment{
 

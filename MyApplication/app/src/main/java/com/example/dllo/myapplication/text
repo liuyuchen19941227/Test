@@ -4,9 +4,32 @@
 主线程不能获取网络数据和对数据库进行操作
 子线程不能刷新UI
 
+ToolBar点击刷新
+画廊 ImageGallery 横向的
 
 
-// Intent传一个对象过去
+
+
+
+
+不停地去发送数据等对方接收,不如让对方不断地去请求数据
+数据就在那里,想要自己去取
+
+
+
+把被动接收变成主动索取,这样子会好写很多很多
+
+
+
+
+
+
+
+// 服务不能绑的那么快?我咋不信呢.....
+
+
+
+
 
 // (Java的) 类 implements Serilizable  接口就可以用intent传   getSerializableExtra("key值");
 

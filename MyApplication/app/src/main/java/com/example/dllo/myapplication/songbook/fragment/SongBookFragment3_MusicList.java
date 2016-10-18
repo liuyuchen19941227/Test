@@ -16,13 +16,13 @@ import android.widget.Toast;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.example.dllo.myapplication.R;
-import com.example.dllo.myapplication.baseClass.BaseFragment;
-import com.example.dllo.myapplication.baseClass.GsonRequest;
-import com.example.dllo.myapplication.baseClass.MyApp;
-import com.example.dllo.myapplication.baseClass.VolleySingleton;
+import com.example.dllo.myapplication.base_class.BaseFragment;
+import com.example.dllo.myapplication.base_class.GsonRequest;
+import com.example.dllo.myapplication.base_class.MyApp;
+import com.example.dllo.myapplication.base_class.VolleySingleton;
 import com.example.dllo.myapplication.songbook.adapter.SongBook3_SongList_BaseAdapter;
 import com.example.dllo.myapplication.songbook.bean.SongBook3_ListBean;
-import com.example.dllo.myapplication.songbook.detail.DetailList1_Recommend1_MusicListRecommend;
+import com.example.dllo.myapplication.songbook.songbookdetails.DetailList1_Recommend1_MusicListRecommend;
 import com.example.dllo.myapplication.songbook.tools.URLValues;
 
 import java.util.ArrayList;
@@ -83,7 +83,7 @@ public class SongBookFragment3_MusicList extends BaseFragment implements View.On
                 bundle.putString("url", url);
                 fragment.setArguments(bundle);
                 // Fragment切换并添加动画效果
-                getFragmentManager().beginTransaction().setCustomAnimations(R.anim.list_detail_enter, R.anim.list_detail_exit).replace(R.id.fl_main, fragment).commit();
+                getFragmentManager().beginTransaction().setCustomAnimations(R.anim.list_detail_enter, R.anim.list_detail_exit).addToBackStack(null).replace(R.id.fl_main, fragment).commit();
 
 
 

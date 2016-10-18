@@ -57,7 +57,7 @@
 
 
     <application
-        android:name=".baseClass.MyApp"
+        android:name=".base_class.MyApp"
         android:allowBackup="true"
         android:icon="@mipmap/icon"
         android:label="百度音乐"
@@ -201,6 +201,7 @@
 
 
 
+
         <activity android:name=".main.MainActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -208,22 +209,11 @@
             </intent-filter>
         </activity>
 
-
-
-        <!--<activity android:name=".songbook.detail.DetailList1_Recommend1_MusicListRecommend" >-->
-        <!--</activity>-->
-
-        <!--<activity android:name=".songbook.detail.DetailList2_Rank">-->
-        <!--</activity>-->
-
-        <activity android:name=".songbook.detail.music_content.MusicActivity">
+        <activity android:name=".detail.music_content.MusicActivity">
         </activity>
 
-
-        <service android:name=".songbook.detail.musicplay.MusicService"/>
-
-
-        <receiver android:name=".songbook.detail.music_content.MusicActivity$Receiver"/>
+        <service android:name=".detail.musicplay.MusicService"/>
+        <receiver android:name=".detail.music_content.MusicActivity$Receiver"/>
 
 
 
