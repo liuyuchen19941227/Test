@@ -32,13 +32,13 @@ public class MusicPlayer implements MediaPlayer.OnPreparedListener, MediaPlayer.
         try {
             player.reset();
             player.setDataSource(url);
+
 //            player.prepareAsync();
             player.prepare();
 
         } catch (IOException e) {
             e.printStackTrace();
         }
-//        player.start();
     }
 
 
@@ -74,11 +74,7 @@ public class MusicPlayer implements MediaPlayer.OnPreparedListener, MediaPlayer.
 
     // 判断是否正在播放
     public boolean isPlay() {
-        if (player.isPlaying()) {
-            return true;
-        } else {
-            return false;
-        }
+        return player.isPlaying();
     }
 
 
@@ -104,6 +100,8 @@ public class MusicPlayer implements MediaPlayer.OnPreparedListener, MediaPlayer.
     public void onPrepared(MediaPlayer mediaPlayer) {
         mediaPlayer.start();
     }
+
+
 
     @Override
     public void onBufferingUpdate(MediaPlayer mediaPlayer, int i) {

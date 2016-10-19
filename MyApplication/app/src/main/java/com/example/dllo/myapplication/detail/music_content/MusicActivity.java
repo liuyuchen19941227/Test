@@ -14,6 +14,7 @@ import android.os.IBinder;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -27,8 +28,10 @@ import com.example.dllo.myapplication.R;
 import com.example.dllo.myapplication.adapter.FragmentAdapter;
 import com.example.dllo.myapplication.base_class.BaseActivity;
 import com.example.dllo.myapplication.base_class.VolleySingleton;
+import com.example.dllo.myapplication.database.DBTools;
 import com.example.dllo.myapplication.detail.musicplay.MusicBean;
 import com.example.dllo.myapplication.detail.musicplay.MusicService;
+import com.example.dllo.myapplication.main.MainActivity;
 import com.google.gson.Gson;
 
 import java.io.File;
@@ -40,8 +43,6 @@ import cn.sharesdk.onekeyshare.OnekeyShare;
 public class MusicActivity extends BaseActivity implements View.OnClickListener {
 
 
-    private String result;
-    private String link;
     private ViewPager vp;
     private MusicService.MyBinder binder;
     private ImageView iv_start;
@@ -50,8 +51,6 @@ public class MusicActivity extends BaseActivity implements View.OnClickListener 
     private TextView tv_music_total_time;
     private TextView tv_music_now;
     private Receiver receiver;
-    private int[] values;
-//    private int duration;
     private ImageView iv_play_model;
     private int model;
     private String urlSharePreference;
@@ -60,7 +59,7 @@ public class MusicActivity extends BaseActivity implements View.OnClickListener 
     private Boolean isLike;
 
     private MusicBean musicBean;
-    private String url1;
+    private DBTools dbTools;
 
 
     @Override
@@ -72,7 +71,7 @@ public class MusicActivity extends BaseActivity implements View.OnClickListener 
     protected void initView() {
 
         // 总时长初始化为0...
-//        duration = 0;
+        //        duration = 0;
 
         // 服务
         // 绑定后要获取binder,并没有那么快,在下面MyConnection2方法里面执行操作
@@ -93,7 +92,6 @@ public class MusicActivity extends BaseActivity implements View.OnClickListener 
         // 当前歌曲url
         urlSharePreference = intent.getStringExtra("url");
         int totalTime = intent.getIntExtra("totalTime", 0);
-//        String url = intent.getStringExtra("url");
 
 
         // 返回按钮
@@ -101,10 +99,9 @@ public class MusicActivity extends BaseActivity implements View.OnClickListener 
         iv_back.setOnClickListener(this);
 
 
-
         // 歌曲进度, 进度条
         tv_music_now = bindView(R.id.tv_music_now);
-        tv_music_now.setText("00 : 00");
+        //        tv_music_now.setText("00 : 00");
         tv_music_total_time = bindView(R.id.tv_music_total_time);
         tv_music_total_time.setText(changeTimeType(totalTime));
         seekBar = bindView(R.id.music_seekBar);
@@ -139,7 +136,6 @@ public class MusicActivity extends BaseActivity implements View.OnClickListener 
     }
 
 
-
     @Override
     protected void initData() {
 
@@ -161,20 +157,9 @@ public class MusicActivity extends BaseActivity implements View.OnClickListener 
         model = getMsgSP.getInt("playMode", 0);
         Log.d("model1", "model:" + model);
 
+        dbTools = new DBTools(this);
 
     }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     @Override
@@ -193,7 +178,11 @@ public class MusicActivity extends BaseActivity implements View.OnClickListener 
 
             case R.id.iv_music_back:
                 finish();
-                Log.d("MusicActivity", "binder.isPlay():" + binder.isPlay());
+                Intent intent1 = new Intent(MusicActivity.this, MainActivity.class);
+                intent1.putExtra("isPlay", binder.getMusicPlayer().isPlay());
+                //                startActivity(intent1);
+                overridePendingTransition(R.anim.dialog_enter, R.anim.dialog_exit);
+
                 break;
             case R.id.iv_music_previous:
                 binder.previous();
@@ -202,19 +191,32 @@ public class MusicActivity extends BaseActivity implements View.OnClickListener 
             case R.id.iv_music_play:
                 // 持久化技术的播放问题
 
-//                if (!urlSharePreference.equals("")) {
-//                    iv_start.setImageResource(R.mipmap.pause);
-//                    binder.getMusicPlayer().playMusic(urlSharePreference);
-//                    urlSharePreference = "";
-//                } else
+                //                if (!urlSharePreference.equals("")) {
+                //                    iv_start.setImageResource(R.mipmap.pause);
+                //                    binder.getMusicPlayer().playMusic(urlSharePreference);
+                //                    urlSharePreference = "";
+                //                } else
+
                 if (binder.isPlay()) {
                     binder.pause();
                     Toast.makeText(this, "暂停", Toast.LENGTH_SHORT).show();
                     iv_start.setImageResource(R.mipmap.play_black);
+
+                    View view1 = LayoutInflater.from(this).inflate(R.layout.activity_main, null);
+                    ImageView iv = (ImageView) view1.findViewById(R.id.iv_main_play);
+                    iv.setImageResource(R.mipmap.play);
+
+
                 } else {
                     binder.play();
                     Toast.makeText(this, "播放", Toast.LENGTH_SHORT).show();
                     iv_start.setImageResource(R.mipmap.pause);
+
+
+                    View view1 = LayoutInflater.from(this).inflate(R.layout.activity_main, null);
+                    ImageView iv = (ImageView) view1.findViewById(R.id.iv_main_play);
+                    iv.setImageResource(R.mipmap.pause);
+
                 }
                 break;
             case R.id.iv_music_next:
@@ -223,7 +225,7 @@ public class MusicActivity extends BaseActivity implements View.OnClickListener 
                 break;
 
             case R.id.iv_music_share:
-                ShareSDK.initSDK(MusicActivity.this,"sharesdk的appkey");
+                ShareSDK.initSDK(MusicActivity.this, "sharesdk的appkey");
                 showShare();
                 break;
             // 播放模式
@@ -232,7 +234,7 @@ public class MusicActivity extends BaseActivity implements View.OnClickListener 
                 model++;
                 // 持久化技术,存储播放模式
                 msgSpEditor.putInt("playMode", model);
-                // 每次修改数据之后必须要加上这句话啊!!!
+                // 每次修改数据之后必须要加上这句话
                 msgSpEditor.commit();
                 judgePlayModel();
                 break;
@@ -253,8 +255,6 @@ public class MusicActivity extends BaseActivity implements View.OnClickListener 
                 break;
         }
     }
-
-
 
 
     // 主线程不能进行解析的耗时操作
@@ -287,8 +287,15 @@ public class MusicActivity extends BaseActivity implements View.OnClickListener 
     }
 
 
-    private void downLoadMusic(MusicBean musicBean){
-        if  (musicBean != null && musicBean.getBitrate() != null && musicBean.getBitrate().getFile_link() != null) {
+    private void downLoadMusic(MusicBean musicBean) {
+        if (musicBean != null && musicBean.getBitrate() != null && musicBean.getBitrate().getFile_link() != null) {
+            Log.d("DBTools1", musicBean.getSonginfo().getSong_id());
+
+            if (dbTools.queryDB(musicBean.getSonginfo().getSong_id())) {
+                Toast.makeText(this, "该歌曲已被下载", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             DownloadManager downloadManager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
             Uri uri = Uri.parse(musicBean.getBitrate().getFile_link());
             DownloadManager.Request request = new DownloadManager.Request(uri);
@@ -299,56 +306,51 @@ public class MusicActivity extends BaseActivity implements View.OnClickListener 
             request.setDestinationInExternalPublicDir(Environment.DIRECTORY_MUSIC, musicBean.getSonginfo().getTitle() + "-" + musicBean.getSonginfo().getAuthor() + ".mp3");
             // 提示正在下载
             request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-            long downloadId = downloadManager.enqueue(request);
 
 
             DownloadMusicBean downloadMusicBean = new DownloadMusicBean();
-
-            downloadMusicBean.setId(downloadId);
-
+            // 队列编号
+            long downloadId = downloadManager.enqueue(request);
+//            downloadMusicBean.setId(downloadId);
             downloadMusicBean.setSong(musicBean.getSonginfo().getTitle());
             downloadMusicBean.setAuthor(musicBean.getSonginfo().getAuthor());
             downloadMusicBean.setSongId(musicBean.getSonginfo().getSong_id());// 直接把song_id存进去
             downloadMusicBean.setMusicUrl(musicBean.getBitrate().getFile_link());
             downloadMusicBean.setImgUrl(musicBean.getSonginfo().getPic_radio());
             downloadMusicBean.setLrcLink(musicBean.getSonginfo().getLrclink());
-
-
-
+            // 插入数据库
+            dbTools.insertDB(musicBean);
 
         }
-
-
     }
 
 
 
-    public void judgePlayModel(){
+
+
+    public void judgePlayModel() {
         Log.d("model2", "model:" + model);
-        switch (model % 4) {
-            case 0:
-                // 循环播放
-                iv_play_model.setImageResource(R.mipmap.play_model_loop_normal);
-                binder.setPlayModel(model);
-                break;
-            case 1:
-                // 顺序播放
-                iv_play_model.setImageResource(R.mipmap.play_model_order_normal);
-                binder.setPlayModel(model);
-                break;
-            case 2:
-                // 随机播放
-                iv_play_model.setImageResource(R.mipmap.play_model_random);
-                binder.setPlayModel(model);
-                break;
-            case 3:
-                // 单曲循环
-                iv_play_model.setImageResource(R.mipmap.play_model_sigle_circle);
-                binder.setPlayModel(model);
-                Log.d("MusicActivity", "单曲循环");
-                break;
+        int result = model % 4;
+        if (result == MusicValues.PLAYMODE_LOOPPLAY) {
+            // 循环播放
+            iv_play_model.setImageResource(R.mipmap.play_model_loop_normal);
+            binder.setPlayModel(model);
+        } else if(result == MusicValues.PLAYMODE_ORDERPLAY) {
+            // 顺序播放
+            iv_play_model.setImageResource(R.mipmap.play_model_order_normal);
+            binder.setPlayModel(model);
+        } else if (result == MusicValues.PLAYMODE_RANDOMPLAY){
+            // 随机播放
+            iv_play_model.setImageResource(R.mipmap.play_model_random);
+            binder.setPlayModel(model);
+        } else if (result == MusicValues.PLAYMODE_SINGLEPLAY){
+            // 单曲循环
+            iv_play_model.setImageResource(R.mipmap.play_model_sigle_circle);
+            binder.setPlayModel(model);
+            Log.d("MusicActivity", "单曲循环");
         }
     }
+
 
 
     // 服务
@@ -362,28 +364,26 @@ public class MusicActivity extends BaseActivity implements View.OnClickListener 
 
             judgePlayModel();
             Log.d("model3", "model:" + model);
-//            binder.setPlayModel(model);
+            //            binder.setPlayModel(model);
 
             // seekBar的播放进度
             // 不断地去请求数据,而不是让服务去发送数据
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    while (true){
+                    while (true) {
                         // 需要判断一下
-                        if (binder.isPlay()){
-                          seekBar.post(new Runnable() {
-                              @Override
-                              public void run() {
-                                  // 以百分比的形式显示
-                                  seekBar.setProgress(binder.getMusicCurrentP() * 100 / binder.getMusicTotalDuration());
-                                  tv_music_now.setText(changeTimeType(binder.getMusicCurrentP()));
-                                  tv_music_total_time.setText(changeTimeType(binder.getMusicTotalDuration()));
+                        if (binder.isPlay()) {
+                            seekBar.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    // 以百分比的形式显示
+                                    seekBar.setProgress(binder.getMusicCurrentP() * 100 / binder.getMusicTotalDuration());
+                                    tv_music_now.setText(changeTimeType(binder.getMusicCurrentP()));
+                                    tv_music_total_time.setText(changeTimeType(binder.getMusicTotalDuration()));
 
-                                  url1 = binder.getUrl();
-
-                              }
-                          });
+                                }
+                            });
                             try {
                                 Thread.sleep(400);
                             } catch (InterruptedException e) {
@@ -395,7 +395,7 @@ public class MusicActivity extends BaseActivity implements View.OnClickListener 
             }).start();
 
 
-        // 判断是否在播放状态
+            // 判断是否在播放状态
             if (binder.isPlay()) {
                 Log.d("MusicActivity", "播放");
                 iv_start.setImageResource(R.mipmap.pause);
@@ -405,7 +405,7 @@ public class MusicActivity extends BaseActivity implements View.OnClickListener 
             }
 
             // 总时长(毫秒为单位)
-//            duration = binder.getMusicPlayer().getTotalTime();
+            //            duration = binder.getMusicPlayer().getTotalTime();
             // tv_music_total_time.setText(changeTimeType(duration));
             // tv_music_total_time.setText(binder.getMusicTotalDuration());
 
@@ -419,14 +419,17 @@ public class MusicActivity extends BaseActivity implements View.OnClickListener 
                         binder.getMusicPlayer().player.seekTo((int) (progress / 100f * binder.getMusicTotalDuration()));
                     }
                 }
+
                 @Override
                 public void onStartTrackingTouch(SeekBar seekBar) {
                 }
+
                 @Override
                 public void onStopTrackingTouch(SeekBar seekBar) {
                 }
             });
         }
+
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
         }
@@ -438,22 +441,21 @@ public class MusicActivity extends BaseActivity implements View.OnClickListener 
         @Override
         public void onReceive(Context context, Intent intent) {
             // 当前时间
-//            int values = intent.getIntExtra("pro", 0);
-//            tv_music_now.setText(changeTimeType(values));
+            //            int values = intent.getIntExtra("pro", 0);
+            //            tv_music_now.setText(changeTimeType(values));
 
-//            int totalTime = intent.getIntExtra("totalTime", 0);
-//            Log.d("Receiver", "totalTime:" + totalTime);
-//            tv_music_total_time.setText(changeTimeType(totalTime));
+            //            int totalTime = intent.getIntExtra("totalTime", 0);
+            //            Log.d("Receiver", "totalTime:" + totalTime);
+            //            tv_music_total_time.setText(changeTimeType(totalTime));
 
 
-//            // 取百分比
-//            int pro = values * 100 / totalTime;
-//            seekBar.setProgress(pro);
+            //            // 取百分比
+            //            int pro = values * 100 / totalTime;
+            //            seekBar.setProgress(pro);
 
 
         }
     }
-
 
 
     // 时间类型转换为   分 : 秒
@@ -464,7 +466,6 @@ public class MusicActivity extends BaseActivity implements View.OnClickListener 
         String s = second >= 10 ? String.valueOf(second) : "0" + String.valueOf(second);
         return m + " : " + s;
     }
-
 
 
     // 分享
@@ -492,7 +493,6 @@ public class MusicActivity extends BaseActivity implements View.OnClickListener 
         // 启动分享GUI
         oks.show(this);
     }
-
 
 
 }

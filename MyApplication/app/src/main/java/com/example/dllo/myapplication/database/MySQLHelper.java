@@ -15,7 +15,7 @@ public class MySQLHelper extends SQLiteOpenHelper{
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         // 数据库的构造
-        sqLiteDatabase.execSQL("create table " +DBValues.TABLE_NAME_MUSIC+ "(id integer primary key autoincrement, )");
+        sqLiteDatabase.execSQL("create table " +DBValues.TABLE_NAME_MUSIC+ "(id integer primary key autoincrement ,"+ DBValues.MUSIC_SONG_ID+" text ,"+DBValues.MUSIC_NAME+" text ,"+DBValues.MUSIC_AUTHOR+" text ,"+DBValues.MUSIC_File_LINK+" text ,"+DBValues.MUSIC_Img_Link+" text ,"+DBValues.MUSIC_LYRIC_LINK+" text)");
     }
 
     @Override

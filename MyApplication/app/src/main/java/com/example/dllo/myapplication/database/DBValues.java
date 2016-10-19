@@ -4,14 +4,16 @@ public class DBValues {
 
 
     // 数据库名
-    public static String SQL_NAME = "BaiduMusic.db";
+    public static String SQL_NAME = "BaiduMusicNew.db";
+
+
 
     // 表名
-    public static String TABLE_NAME_MUSIC = "music";
+    public static String TABLE_NAME_MUSIC = "musicNew";
+
+
 
     // 列名
-
-
     public static String MUSIC_SONG_ID = "songId";
     public static String MUSIC_NAME = "musicName";
     public static String MUSIC_AUTHOR = "musicAuthor";

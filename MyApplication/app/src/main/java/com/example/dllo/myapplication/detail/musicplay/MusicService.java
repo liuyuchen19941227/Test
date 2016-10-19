@@ -24,6 +24,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.example.dllo.myapplication.R;
 import com.example.dllo.myapplication.base_class.VolleySingleton;
+import com.example.dllo.myapplication.detail.music_content.MusicValues;
 import com.example.dllo.myapplication.detail.popup_window.MusicItemBean;
 import com.example.dllo.myapplication.main.SendMsgEventBean;
 import com.google.gson.Gson;
@@ -62,6 +63,7 @@ public class MusicService extends Service {
     private ArrayList<MusicItemBean> musicItemBeans;
     private Notification notification;
     private String url;
+    private String link;
 
     @Nullable
     @Override
@@ -79,12 +81,16 @@ public class MusicService extends Service {
         gson = new Gson();
         // EventBus
         event = new SendMsgEventBean();
-        // 注册广播
+
+
+        // 注册Notification
         broadCast = new MyMusicBroadCast();
         filter = new IntentFilter();
-        // Notify的按钮点击广播
         filter.addAction(getPackageName() + "music");
+        filter.addAction(getPackageName() + "previousMusic");
+        filter.addAction(getPackageName() + "nextMusic");
         registerReceiver(broadCast, filter);
+
 
         // 播放完毕的监听
         musicPlayer.player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
@@ -100,7 +106,6 @@ public class MusicService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        // 耗时操作
         if (intent != null) {
             // 整个歌单的链接(未解析)
             arrayList = intent.getStringArrayListExtra("urlMore");
@@ -130,7 +135,6 @@ public class MusicService extends Service {
     // 用来传数据的,针对binder去操作
     public class MyBinder extends Binder {
 
-
         // 获取总的播放时长
         public int getMusicTotalDuration(){
             if (musicPlayer.player != null){
@@ -151,14 +155,12 @@ public class MusicService extends Service {
             return url;
         }
 
-
         public MyBinder() {
         }
 
         public MusicPlayer getMusicPlayer() {
             return musicPlayer;
         }
-
 
         public void next() {
             nextMusic();
@@ -228,9 +230,6 @@ public class MusicService extends Service {
             return musicBean;
         }
 
-
-
-
     }
 
 
@@ -250,70 +249,20 @@ public class MusicService extends Service {
                         Log.d(TAG, response);
                         musicBean = gson.fromJson(response, MusicBean.class);
                         // 音乐链接
-                        String link = musicBean.getBitrate().getFile_link();
+                        link = musicBean.getBitrate().getFile_link();
                         Log.d("MusicService", link);
                         // 控制播放
                         musicPlayer.playMusic(link);
-
-                        // EventBus必须要注册的界面先加载,然后这边再发送
-                        event.setAuthor(musicBean.getSonginfo().getAuthor());
-                        event.setSong(musicBean.getSonginfo().getTitle());
-                        event.setImg(musicBean.getSonginfo().getPic_radio());
-                        event.setLrclink(musicBean.getSonginfo().getLrclink());// 歌词链接
-                        event.setUrl(link);
-                        event.setMusics(arrayList);// 将整个歌单传过去
-//                        event.setMusicBean(musicBean);
-
-
-                        // 有可能那么快解析完毕吗
-                        musicItemBeans = new ArrayList<>();
-                        if (arrayList != null) {
-                            // 歌单的url
-                            for (int i = 0; i < arrayList.size(); i++) {
-                                // VolleyApplication等都没有分好
-                                sendGetArr(arrayList.get(i));
-                                musicItemBeans.get(i).setIsPlay(0);
-                            }
-                        }
-
-                        // 将正在播放位置的歌曲isPlay属性置为1
-                        musicItemBeans.get(position).setIsPlay(1);
-
-                        // 传输解析好了的歌单信息
-                        event.setMusicItemBeanArrayList(musicItemBeans);
-                        EventBus.getDefault().post(event);
-
-
-
-                        Log.d("lrclink3", musicBean.getSonginfo().getLrclink());
-
-
-                        // 数据持久化技术
-                        SharedPreferences msgSetSp = getSharedPreferences("music", MODE_PRIVATE);
-                        SharedPreferences.Editor editor = msgSetSp.edit();
-                        editor.putString("song", musicBean.getSonginfo().getTitle());
-                        editor.putString("author", musicBean.getSonginfo().getAuthor());
-                        editor.putString("img", musicBean.getSonginfo().getPic_radio());
-                        editor.putString("songUrl", musicBean.getBitrate().getFile_link());
-                        editor.putString("lrcLink", musicBean.getSonginfo().getLrclink());
-                        editor.putInt("playMode", playModel);
-                        editor.putInt("totalTime", binder.getMusicTotalDuration());// 总时长
-                        editor.commit();
-
-
-                        Log.d("model222", "model:" + playModel);
-
-
-
+                        // EventBus发送数据
+                        sendMsgEventBus();
+                        // 持久化技术
+                        saveSP();
                         // 显示提示
                         showMusicNotify();
-
                         // 获取总时长
                         totalTime = musicPlayer.player.getDuration();
-                        Log.d(TAG, "totalTime:" + totalTime);
                         // 歌词
                         lrc = musicBean.getSonginfo().getLrclink();
-
                     }
                 },
                 new Response.ErrorListener() {
@@ -324,12 +273,61 @@ public class MusicService extends Service {
                 }
         );
         VolleySingleton.getInstance().addRequest(request2);
-
         binder.sendBroadCast();
+    }
 
+
+
+    public void sendMsgEventBus(){
+
+        // EventBus必须要注册的界面先加载,然后这边再发送
+        event.setAuthor(musicBean.getSonginfo().getAuthor());
+        event.setSong(musicBean.getSonginfo().getTitle());
+        event.setImg(musicBean.getSonginfo().getPic_radio());
+        event.setLrclink(musicBean.getSonginfo().getLrclink());// 歌词链接
+        event.setUrl(link);
+        event.setMusics(arrayList);// 将整个歌单传过去
+        // event.setMusicBean(musicBean);
+
+        musicItemBeans = new ArrayList<>();
+        if (arrayList != null) {
+            // 歌单的url
+            for (int i = 0; i < arrayList.size(); i++) {
+                // VolleyApplication等都没有分好
+                sendGetArr(arrayList.get(i));
+                musicItemBeans.get(i).setIsPlay(0);
+            }
+        }
+
+        // 将正在播放位置的歌曲isPlay属性置为1
+        musicItemBeans.get(position).setIsPlay(1);
+
+
+
+        // 传输解析好了的歌单信息
+        event.setMusicItemBeanArrayList(musicItemBeans);
+
+        EventBus.getDefault().post(event);
 
     }
 
+
+
+    public void saveSP(){
+
+        // 数据持久化技术
+        SharedPreferences msgSetSp = getSharedPreferences("music", MODE_PRIVATE);
+        SharedPreferences.Editor editor = msgSetSp.edit();
+        editor.putString("song", musicBean.getSonginfo().getTitle());
+        editor.putString("author", musicBean.getSonginfo().getAuthor());
+        editor.putString("img", musicBean.getSonginfo().getPic_radio());
+        editor.putString("songUrl", musicBean.getBitrate().getFile_link());
+        editor.putString("lrcLink", musicBean.getSonginfo().getLrclink());
+        editor.putInt("playMode", playModel);
+        editor.putInt("totalTime", binder.getMusicTotalDuration());// 总时长
+        editor.commit();
+
+    }
 
 
 
@@ -352,6 +350,7 @@ public class MusicService extends Service {
                         MusicBean bean = gson.fromJson(responseNew, MusicBean.class);
                         musicItemBean.setSong(bean.getSonginfo().getTitle());
                         musicItemBean.setAuthor(bean.getSonginfo().getAuthor());
+                        musicItemBean.setUrl(bean.getBitrate().getFile_link());
                     }
                 },
                 new Response.ErrorListener() {
@@ -373,51 +372,50 @@ public class MusicService extends Service {
     // 播放模式
     // 可以在这里面判断播放完的下一步
     public void nextMusic() {
-        switch (playModel % 4) {
-            case 0:
-                // 如果正好放到最后一首歌了
-                // 在这也要用EventBus发送数据到MainActivity更新UI
-                if (arrayList != null) {
-                    if (position == (arrayList.size() - 1)) {
-                        sendGet(arrayList.get(0));
-                        position = 0;
-                    } else {
-                        // 单独找到那首歌
-                        sendGet(arrayList.get(++position));
-                    }
+
+        int result = playModel % 4;
+
+        if (result == MusicValues.PLAYMODE_LOOPPLAY) {
+            // 如果正好放到最后一首歌了
+            // 在这也要用EventBus发送数据到MainActivity更新UI
+            if (arrayList != null) {
+                if (position == (arrayList.size() - 1)) {
+                    sendGet(arrayList.get(0));
+                    position = 0;
                 } else {
-                    Toast.makeText(this, "歌单为空,没有下一曲!!", Toast.LENGTH_SHORT).show();
+                    // 单独找到那首歌
+                    sendGet(arrayList.get(++position));
                 }
-                Log.d(TAG, "0:" + 0);
-                break;
-            case 1:
-                // 顺序播放
-                if (arrayList != null) {
-                    if (position == (arrayList.size() - 1)) {
-                        // 直接停止
-                        musicPlayer.player.stop();
-                    } else {
-                        // 单独找到那首歌
-                        sendGet(arrayList.get(++position));
-                    }
+            } else {
+                Toast.makeText(this, "歌单为空,没有下一曲!!", Toast.LENGTH_SHORT).show();
+            }
+            Log.d(TAG, "0:" + 0);
+        } else if (result == MusicValues.PLAYMODE_ORDERPLAY) {
+            // 顺序播放
+            if (arrayList != null) {
+                if (position == (arrayList.size() - 1)) {
+                    // 直接停止
+                    musicPlayer.player.stop();
                 } else {
-                    Toast.makeText(this, "歌单为空,没有下一曲!!", Toast.LENGTH_SHORT).show();
+                    // 单独找到那首歌
+                    sendGet(arrayList.get(++position));
                 }
-                Log.d(TAG, "1:" + 1);
-                break;
-            case 2:
-                // 随机播放
-                if (arrayList != null) {
-                    position = (int) (Math.random() * arrayList.size());
-                    sendGet(arrayList.get(position));
-                }
-                Log.d(TAG, "2:" + 2);
-                break;
-            case 3:
+            } else {
+                Toast.makeText(this, "歌单为空,没有下一曲!!", Toast.LENGTH_SHORT).show();
+            }
+            Log.d(TAG, "1:" + 1);
+        } else if (result == MusicValues.PLAYMODE_RANDOMPLAY) {
+            // 随机播放
+            if (arrayList != null) {
+                position = (int) (Math.random() * arrayList.size());
                 sendGet(arrayList.get(position));
-                Log.d(TAG, "3:" + 3);
-                break;
+            }
+            Log.d(TAG, "2:" + 2);
+        } else if (result == MusicValues.PLAYMODE_SINGLEPLAY) {
+            sendGet(arrayList.get(position));
+            Log.d(TAG, "3:" + 3);
         }
+
     }
 
 
@@ -446,12 +444,38 @@ public class MusicService extends Service {
     private class MyMusicBroadCast extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.d("MyMusicBroadCast", "发送广播");
-            if (musicPlayer.isPlay()) {
-                musicPlayer.pause();
-            } else {
-                musicPlayer.start();
+
+//            // 注册Notification
+//            broadCast = new MyMusicBroadCast();
+//            filter = new IntentFilter();
+//            filter.addAction(getPackageName() + "music");
+//            filter.addAction(getPackageName() + "previousMusic");
+//            filter.addAction(getPackageName() + "nextMusic");
+//            registerReceiver(broadCast, filter);
+
+
+
+            String type = intent.getAction();
+            if (type.equals(getPackageName() + "music")) {
+                if (musicPlayer.isPlay()) {
+                    musicPlayer.pause();
+                } else {
+                    musicPlayer.start();
+                }
+                Log.d(TAG, "播放/暂停");
+            } else if (type.equals(getPackageName() + "previousMusic")){
+                Log.d(TAG, "上一曲");
+                previousMusic();
+            } else if (type.equals(getPackageName() + "nextMusic")) {
+                nextMusic();
+                Log.d(TAG, "下一曲");
             }
+
+
+
+
+
+
         }
     }
 
@@ -489,6 +513,19 @@ public class MusicService extends Service {
         Intent intent = new Intent(getPackageName() + "music");
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 102, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         remoteViews.setOnClickPendingIntent(R.id.iv_notify_start, pendingIntent);
+
+        Intent intentPrevious = new Intent(getPackageName() + "previousMusic");
+        PendingIntent pendingIntentPrevious = PendingIntent.getBroadcast(this, 103, intentPrevious, PendingIntent.FLAG_UPDATE_CURRENT);
+        remoteViews.setOnClickPendingIntent(R.id.iv_notify_previous, pendingIntentPrevious);
+
+        Intent intentNext = new Intent(getPackageName() + "nextMusic");
+        PendingIntent pendingIntentNext = PendingIntent.getBroadcast(this, 104, intentNext, PendingIntent.FLAG_UPDATE_CURRENT);
+        remoteViews.setOnClickPendingIntent(R.id.iv_notify_next, pendingIntentNext);
+
+
+
+
+
         builder.setContent(remoteViews);
 
 

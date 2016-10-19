@@ -70,7 +70,6 @@ dependencies {
     // EventBus 用来传数据
     compile 'org.greenrobot:eventbus:3.0.0'
 
-
     compile files('libs/MobCommons-2016.0830.1940.jar')
     compile files('libs/jpush-android-2.1.9.jar')
 }

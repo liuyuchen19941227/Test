@@ -86,6 +86,7 @@ public class Fragment_Music_Page3_Lyric extends BaseFragment {
         String lrc =  sp.getString("lrcLink", "");
 
 
+
         if (!lrc.equals("")){
             getFromAssets(lrc);
             // set歌词
@@ -157,8 +158,6 @@ public class Fragment_Music_Page3_Lyric extends BaseFragment {
             myBinder = (MusicService.MyBinder) iBinder;
             mediaPlayer = myBinder.getMusicPlayer().player;
 
-
-
             //设置自定义的LrcView上下拖动歌词时监听1
             mLrcView.setListener(new ILrcViewListener() {
                 //当歌词被用户上下拖动的时候回调该方法,从高亮的那一句歌词开始播放
@@ -169,8 +168,6 @@ public class Fragment_Music_Page3_Lyric extends BaseFragment {
                     }
                 }
             });
-
-
 
         }
 

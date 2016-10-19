@@ -33,6 +33,7 @@ public class VolleySingleton {
         return mVolleySingleton;
     }
 
+
     public void getImage(String imgUrl, ImageView imageView){
         ImageLoader.ImageListener imageListener = ImageLoader.getImageListener(imageView, R.mipmap.ic_launcher, R.mipmap.ic_launcher);
         imageLoader.get(imgUrl, imageListener);

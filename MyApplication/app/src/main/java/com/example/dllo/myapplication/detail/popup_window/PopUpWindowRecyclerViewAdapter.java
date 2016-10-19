@@ -6,9 +6,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.dllo.myapplication.R;
+import com.example.dllo.myapplication.songbook.tools.OnRecyclerViewItemListener;
 
 import java.util.ArrayList;
 
@@ -17,6 +19,16 @@ public class PopUpWindowRecyclerViewAdapter extends RecyclerView.Adapter{
     private Context mContext;
     private ArrayList<MusicItemBean> musicItemBeans;
 
+    private OnRecyclerViewItemListener listener;
+
+
+    public void setOnItemClickListener(OnRecyclerViewItemListener listener){
+        this.listener = listener;
+    }
+
+
+
+
     public PopUpWindowRecyclerViewAdapter(Context mContext) {
         this.mContext = mContext;
     }
@@ -24,6 +36,9 @@ public class PopUpWindowRecyclerViewAdapter extends RecyclerView.Adapter{
     public void setMusicItemBeen(ArrayList<MusicItemBean> musicItemBeans) {
         this.musicItemBeans = musicItemBeans;
     }
+
+
+
 
 
 
@@ -38,10 +53,10 @@ public class PopUpWindowRecyclerViewAdapter extends RecyclerView.Adapter{
 
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
 
-        ViewHolder viewHolder = (ViewHolder) holder;
-        viewHolder.song.setText(position + musicItemBeans.get(position).getSong());
+        final ViewHolder viewHolder = (ViewHolder) holder;
+        viewHolder.song.setText(position +" - " + musicItemBeans.get(position).getSong());
         viewHolder.author.setText(musicItemBeans.get(position).getAuthor());
 
         // 相隔8个,重复出现一次....
@@ -52,6 +67,15 @@ public class PopUpWindowRecyclerViewAdapter extends RecyclerView.Adapter{
             viewHolder.imgIsPlay.setImageResource(0);
         }
 
+
+
+        viewHolder.rl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                listener.onItemClick(viewHolder.rl, "",position);
+
+            }
+        });
 
 
     }
@@ -71,6 +95,9 @@ public class PopUpWindowRecyclerViewAdapter extends RecyclerView.Adapter{
         private TextView author;
         private ImageView imgIsPlay;
         private ImageView imgPlayMode;
+        private RelativeLayout rl;
+
+
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -78,6 +105,10 @@ public class PopUpWindowRecyclerViewAdapter extends RecyclerView.Adapter{
             author = (TextView) itemView.findViewById(R.id.tv_item_popupwindow_author);
             imgIsPlay = (ImageView) itemView.findViewById(R.id.iv_popupwindow_isplay);
 //            imgPlayMode = (ImageView) itemView.findViewById(R.id.iv_popupwindow_mylist_playmode);
+            rl = (RelativeLayout) itemView.findViewById(R.id.rv_ppw_item);
+
+
+
         }
     }
 

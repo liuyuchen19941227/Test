@@ -23,15 +23,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
 import com.example.dllo.myapplication.R;
 import com.example.dllo.myapplication.adapter.FragmentAdapter;
 import com.example.dllo.myapplication.base_class.BaseActivity;
 import com.example.dllo.myapplication.base_class.MyApp;
-import com.example.dllo.myapplication.base_class.VolleySingleton;
 import com.example.dllo.myapplication.detail.music_content.MusicActivity;
 import com.example.dllo.myapplication.detail.musicplay.MusicBean;
 import com.example.dllo.myapplication.detail.musicplay.MusicService;
@@ -41,7 +38,7 @@ import com.example.dllo.myapplication.karaoke.KaraokeFragment;
 import com.example.dllo.myapplication.live.LiveFragment;
 import com.example.dllo.myapplication.my.MyFragment;
 import com.example.dllo.myapplication.songbook.fragment.SongBookFragment;
-import com.google.gson.Gson;
+import com.example.dllo.myapplication.songbook.tools.OnRecyclerViewItemListener;
 import com.squareup.picasso.Picasso;
 
 import org.greenrobot.eventbus.EventBus;
@@ -77,6 +74,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private LinearLayout ll;
     private ArrayList<MusicItemBean> musicItemBeans;
     private MusicBean musicBean;
+    private Intent intent;
 
 
     @Override
@@ -139,10 +137,21 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
 
         // 在这开启服务!!!!!
-        Intent intent = new Intent(MyApp.getContext(), MusicService.class);
+        intent = new Intent(MyApp.getContext(), MusicService.class);
         startService(intent);
         connection = new MyConnection();
         bindService(intent, connection, BIND_AUTO_CREATE);
+
+
+
+//        Intent intent1 = getIntent();
+//        if (intent1.getBooleanExtra("isPlay", true)) {
+//            Log.d("MainActivity", "pause");
+//            ivPlay.setImageResource(R.mipmap.pause);
+//        } else {
+//            Log.d("MainActivity", "play");
+//            ivPlay.setImageResource(R.mipmap.play);
+//        }
 
 
 
@@ -154,7 +163,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     protected void onDestroy() {
         super.onDestroy();
         unbindService(connection);
-
     }
 
 
@@ -178,9 +186,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         tvSong.setText(song);
         tvAuthor.setText(author);
         Picasso.with(this).load(img).into(ivMusic);
+
         ivPlay.setImageResource(R.mipmap.pause);
-
-
 
     }
 
@@ -209,7 +216,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         tb.getTabAt(2).setText("动态");
         tb.getTabAt(3).setText("直播");
 
-
+        vp.setCurrentItem(1);
+        vp.setOffscreenPageLimit(2);
 
 
 
@@ -244,11 +252,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.iv_main_play:
-                if (!url.equals("")) {
-                    binder.getMusicPlayer().playMusic(url);
-                    ivPlay.setImageResource(R.mipmap.pause);
-                    url = "";
-                } else if (binder.isPlay()) {
+//                startService(intent);
+//                if (!url.equals("")) {
+//                    binder.getMusicPlayer().playMusic(url);
+//                    ivPlay.setImageResource(R.mipmap.pause);
+//                    url = "";
+//                } else
+                if (binder.isPlay()) {
                     binder.pause();
                     ivPlay.setImageResource(R.mipmap.play);
                 } else {
@@ -270,124 +280,53 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     // 显示MusicList - PopUpWindow()
     private void showPopUpWindow(){
-
-
         // 设置个透明度
-
-
-
-        // ppWMusicList = LayoutInflater.from(this).inflate(R.layout.popup_window_my_songlist, getParent(), false);
-
         View contentView = LayoutInflater.from(this).inflate(R.layout.popup_window_my_songlist, null);
         PopupWindow ppWMusicList = new PopupWindow(contentView, RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT, true);
-
-
         RecyclerView recyclerView = (RecyclerView) contentView.findViewById(R.id.rv_popup_window_mylist);
-
-
 
         ppWMusicList.setTouchInterceptor(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
+
 
                 // 要返回false
                 return false;
             }
         });
 
-
         // 必须要设置,不然点击返回按钮和背景是不会退出popupWindow的
         ppWMusicList.setTouchable(true);
         ppWMusicList.setOutsideTouchable(true);
         ppWMusicList.setBackgroundDrawable(new BitmapDrawable(getResources(), (Bitmap) null));
-
-
-
-
-//        musicItemBeans = new ArrayList<>();
-//
-//        if (musics != null) {
-//            // 歌单的url
-//            for (int i = 0; i < musics.size(); i++) {
-//                // VolleyApplication等都没有分好
-//                sendGetArr(musics.get(i));
-////                Log.d("MainActivity", musicItemBeans.get(i).getSong());
-//                Log.d("MainActivity", "???????");
-//            }
-//        }
-
-
 
         // 接收一个传过来的解析好的数据,否则可能会前面的没数据,下拉再上拉刷新后才有
         PopUpWindowRecyclerViewAdapter adapter = new PopUpWindowRecyclerViewAdapter(this);
         adapter.setMusicItemBeen(musicItemBeans);
         recyclerView.setAdapter(adapter);
 
+        adapter.setOnItemClickListener(new OnRecyclerViewItemListener() {
+            @Override
+            public void onItemClick(View view, String id, int position) {
+                Toast.makeText(MainActivity.this, "position:" + position, Toast.LENGTH_SHORT).show();
+                // 播放下一曲
+                binder.getMusicPlayer().playMusic(musicItemBeans.get(position).getUrl());
+                // 能播放,可是播放之后的刷新UI还没写
+
+            }
+        });
+
+
+
         LinearLayoutManager manager = new LinearLayoutManager(this);
         manager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(manager);
 
-
-
-        // ppw设置显示位置(第二个参数:高度为差不多距离底部的   像素?  )
+        // ppw设置显示位置(第二个参数:高度为距离底部的     )
         ppWMusicList.showAtLocation(vp, Gravity.BOTTOM, 0, 0);
 
         // 在某某下方显示
 //        ppWMusicList.showAsDropDown(vp);
-
-
-
-
-
-
-
-    }
-
-
-
-    // 整个播放列表(解析后的)
-    private void sendGetArr(String s) {
-        // 用这个方法的话,bean还是要加上的
-
-        final MusicItemBean musicItemBean = new MusicItemBean();
-
-        StringRequest request2 = new StringRequest(
-                s,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        String responseNew = response.substring(1, response.length() - 2);
-                        final Gson gson = new Gson();
-
-                        MusicBean bean = gson.fromJson(responseNew, MusicBean.class);
-
-
-
-                        musicItemBean.setSong(bean.getSonginfo().getTitle());
-                        musicItemBean.setAuthor(bean.getSonginfo().getAuthor());
-                        musicItemBean.setIsPlay(0);// 是否在播放...暂定为0
-
-
-
-
-
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.d("MusicActivity", "error");
-                    }
-                }
-        );
-        VolleySingleton.getInstance().addRequest(request2);
-
-
-
-        musicItemBeans.add(musicItemBean);
-
-        Log.d("size", "musicItemBeans.size():" + musicItemBeans.size());
-
 
     }
 
@@ -398,22 +337,28 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     public class MyConnection implements ServiceConnection {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            Log.d("MyConnection", "运行了");
             binder = (MusicService.MyBinder)iBinder;
 
             binder.sendBroadCast();
 
             if (binder.isPlay()) {
+                Log.d("MyConnection", "pause?");
                 binder.pause();
                 ivPlay.setImageResource(R.mipmap.pause);
             } else {
+                Log.d("MyConnection", "play?");
                 binder.play();
                 ivPlay.setImageResource(R.mipmap.play);
             }
+
+
+
+
         }
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
         }
+
     }
 
 

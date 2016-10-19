@@ -5,6 +5,18 @@ public class MusicItemBean {
     private String song;
     private String author;
     private int isPlay;
+    private String url;
+
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+
 
     public MusicItemBean() {
     }

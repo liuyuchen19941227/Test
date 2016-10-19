@@ -175,7 +175,7 @@
 
         <!-- User defined.  For test only  用户自定义的广播接收器-->
         <receiver
-            android:name=".main.MyReceiver"
+            android:name=".songbook.tools.MyReceiver"
             android:exported="false"
             android:enabled="true">
             <intent-filter>
@@ -198,16 +198,21 @@
 
 
 
+        <activity android:name=".main.AsyncTaskPicActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+
+        </activity>
 
 
 
 
         <activity android:name=".main.MainActivity" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
         </activity>
+
+
 
         <activity android:name=".detail.music_content.MusicActivity">
         </activity>

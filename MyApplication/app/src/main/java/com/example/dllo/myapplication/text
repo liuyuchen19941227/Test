@@ -8,6 +8,24 @@ ToolBar点击刷新
 画廊 ImageGallery 横向的
 
 
+点击下一曲后,滑动的顿卡
+
+
+xml的常量都定义好 20dp, "XXX"
+
+
+// 写成单例模式, 用LiteOrm
+
+
+holder.itemView.setOnClickListener
+可以在Adapter里面直接定义点击事件
+itemView绑定整个布局
+
+// 三秒 - 初始化的延迟事件代码(执行后获取系统时间 - 执行前获取系统时间)
+页面销毁时,取消Volley请求队列,毕加索的图片加载
+
+
+
 
 
 

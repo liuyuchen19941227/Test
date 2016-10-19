@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<set xmlns:android="http://schemas.android.com/apk/res/android">
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+     android:duration="600"
+    >
 
 
     <!--dialog进入动画-->
     <translate
         android:fromYDelta="100%p"
-        android:duration="600"/>
+        android:toYDelta="0%p"
+        />
 
 
 </set>
